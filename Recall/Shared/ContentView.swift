@@ -13,23 +13,23 @@ struct ContentView: View {
         _viewModel=StateObject(wrappedValue: ClipboardViewModel(clipboardService: clipboardService))
     }
     var body:some View{
-        VStack(spacing: 20) {
-                    Text("Clipboard App")
-                        .font(.title)
-
-                    Text(viewModel.clipboardText)
-                        .padding()
-
-                    Button("Fetch Clipboard") {
-                        viewModel.fetchClipboard()
-                    }
-                }
-                .padding()
+        NavigationSplitView{
+            List{
+                Text("check1")
+                Text("check2")
+                Text("check3")
+            }
+            .frame(minWidth: 200)
+            .navigationTitle("Histoy")
+            
+        }detail:{
+            
+        }
     }
 }
 class MockClipboardService: ClipboardService {
     func getClipboardText() -> String? {
-        return "Preview clipboard text"
+        return "Text"
     }
 }
 

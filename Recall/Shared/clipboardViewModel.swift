@@ -7,13 +7,13 @@
 
 import Foundation
 class ClipboardViewModel:ObservableObject {
-    @Published var clipboardText:String = ""
+    @Published var clipboardHistory:[String] = []
     private let clipboardService:ClipboardService
     init(clipboardService:ClipboardService){
         self.clipboardService = clipboardService
     }
     func fetchClipboard(){
-        clipboardText=clipboardService.getClipboardText() ?? ""
+      
     }
     
 }
