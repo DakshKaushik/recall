@@ -7,7 +7,7 @@
 
 import Foundation
 import AppKit
-class MacClipboardService:ClipboardService {
+class MacClipboardService {
     func getClipboardText() -> String? {
         return NSPasteboard.general.string(forType: .string)
     }
