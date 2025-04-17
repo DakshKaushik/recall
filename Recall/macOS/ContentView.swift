@@ -3,6 +3,9 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var viewModel = ClipboardViewModel()
     @State private var selectedItem: ClipboardItem?
+    init(viewModel: ClipboardViewModel = ClipboardViewModel()) {
+            _viewModel = StateObject(wrappedValue: viewModel)
+        }
     
     var body: some View {
         NavigationSplitView {
@@ -63,3 +66,14 @@ struct ContentView: View {
         }
     }
 }
+#Preview {
+    let mockViewModel = ClipboardViewModel()
+    // Add some sample items
+    mockViewModel.clipboardItems = [
+        ClipboardItem(content: "Sample clipboard text 1", date: Date(), type: "Text"),
+        ClipboardItem(content: "Another clipboard item with more content", date: Date().addingTimeInterval(-3600), type: "Text (Formatted)")
+    ]
+    
+    return ContentView(viewModel: mockViewModel)
+}
+

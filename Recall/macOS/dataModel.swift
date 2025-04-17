@@ -6,8 +6,8 @@
 //
 
 import Foundation
-
-struct ClipboardItem:Identifiable{
+import SwiftUI
+struct ClipboardItem:Identifiable,Hashable{
     var id=UUID()
     var content: String
     var date: Date
@@ -19,11 +19,5 @@ struct ClipboardItem:Identifiable{
     
     var wordCount: Int {
         return content.split(separator: " ").count
-    }
-    func hash(into hasher: inout Hasher) {
-            hasher.combine(id)
-        }
-    static func == (lhs: ClipboardItem, rhs: ClipboardItem) -> Bool {
-        return lhs.id == rhs.id
     }
 }
