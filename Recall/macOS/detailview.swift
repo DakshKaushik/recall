@@ -6,11 +6,11 @@
 //
 import SwiftUI
 import AppKit
-
 struct DetailView: View {
     let selectedItem: ClipboardItem?
     @Environment(\.colorScheme) private var colorScheme
-    
+    @ObservedObject var viewModel:ClipboardViewModel
+    @Binding var selectedItemId: UUID?
     var body: some View {
         if let item = selectedItem {
             ScrollView {
@@ -35,7 +35,17 @@ struct DetailView: View {
                         Spacer()
                         
                         // Action buttons
-                        Button(action: { NSPasteboard.general.setString(item.content, forType: .string) }) {
+                        Button (action:{ if let item = selectedItem {
+                            viewModel.removeItem(with: item.id)
+                            selectedItemId = nil
+                        }}){
+                            Label("Delete",systemImage:"trash")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(.red)
+                        Button(action: { if let item=selectedItem{
+                            viewModel.copyItem(with: item.id)
+                        }}) {
                             Label("Copy", systemImage: "doc.on.doc")
                         }
                         .buttonStyle(.borderedProminent)
@@ -63,25 +73,35 @@ struct DetailView: View {
                             .font(.headline)
                             .padding(.bottom, 4)
                         
-                        HStack(spacing: 20) {
+                        HStack(spacing: 16) {
                             StatBadge(
                                 title: "Characters",
                                 value: "\(item.characterCount)",
                                 icon: "character.textbox"
                             )
+                            .frame(maxWidth: .infinity)
+                            .background(Color(colorScheme == .dark ? NSColor.windowBackgroundColor : NSColor.controlBackgroundColor))
+                            .cornerRadius(8)
                             
                             StatBadge(
                                 title: "Words",
                                 value: "\(item.wordCount)",
                                 icon: "text.word.spacing"
                             )
+                            .frame(maxWidth: .infinity)
+                            .background(Color(colorScheme == .dark ? NSColor.windowBackgroundColor : NSColor.controlBackgroundColor))
+                            .cornerRadius(8)
                             
                             StatBadge(
                                 title: "Lines",
                                 value: "\(item.content.components(separatedBy: .newlines).count)",
                                 icon: "list.bullet"
                             )
+                            .frame(maxWidth: .infinity)
+                            .background(Color(colorScheme == .dark ? NSColor.windowBackgroundColor : NSColor.controlBackgroundColor))
+                            .cornerRadius(8)
                         }
+                        .padding(.horizontal)
                     }
                 }
                 .padding()

@@ -9,7 +9,7 @@ import Foundation
 import AppKit
 class ClipboardViewModel:ObservableObject {
     @Published var clipboardItems: [ClipboardItem] = []
-        
+    
         private var lastChangeCount: Int
         private var timer: Timer?
         
@@ -40,7 +40,7 @@ class ClipboardViewModel:ObservableObject {
                     let newItem = ClipboardItem(
                         content: string,
                         date: Date(),
-                        type: string.contains("\n") ? "Text (Formatted)" : "Text",
+                        type: "Text",
                     )
                     
                     // Add to our list
@@ -50,5 +50,17 @@ class ClipboardViewModel:ObservableObject {
                 }
             }
         }
+    func removeItem(with id:UUID){
+        clipboardItems.removeAll{$0.id == id}
+    }
+    func copyItem(with id :UUID){
+        if let item = clipboardItems.first(where: { $0.id == id }) {
+                NSPasteboard.general.setString(item.content, forType: .string)
+                DispatchQueue.main.async {
+                    self.clipboardItems.insert(item, at: 0)
+                }
+            }
+        
+    }
     
 }

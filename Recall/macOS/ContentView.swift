@@ -29,10 +29,13 @@ struct ContentView: View {
             
         } detail: {
             DetailView(
-                selectedItem: selectedItemId != nil ? viewModel.clipboardItems.first(where: { $0.id == selectedItemId }) : nil
+                selectedItem: selectedItemId != nil ? viewModel.clipboardItems.first(where: { $0.id == selectedItemId }) : nil,
+               viewModel: viewModel,
+                selectedItemId:$selectedItemId
             )
         }
         .navigationSplitViewStyle(.balanced)
+        
     }
 }
 
@@ -41,9 +44,6 @@ struct ContentView: View {
     // Add some sample items
     mockViewModel.clipboardItems = [
         ClipboardItem(content: "Sample clipboard text that might be long enough to show line wrapping", date: Date(), type: "Text"),
-        ClipboardItem(content: "Another clipboard item with more content", date: Date().addingTimeInterval(-3600), type: "Text (Formatted)"),
-        ClipboardItem(content: "https://www.apple.com", date: Date().addingTimeInterval(-86400), type: "URL"),
-        ClipboardItem(content: "let x = 10", date: Date().addingTimeInterval(-172800), type: "Code")
     ]
     
     return ContentView(viewModel: mockViewModel)
