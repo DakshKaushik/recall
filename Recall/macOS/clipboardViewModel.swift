@@ -35,7 +35,7 @@ class ClipboardViewModel:ObservableObject {
                 lastChangeCount = pasteboard.changeCount
                 
                 // Try to get text from clipboard
-                if let string = pasteboard.string(forType: .string) {
+                if let string = pasteboard.string(forType: .string)?.trimmingCharacters(in: .whitespacesAndNewlines), !string.isEmpty {
                     // Create a new clipboard item
                     let newItem = ClipboardItem(
                         content: string,
@@ -56,10 +56,16 @@ class ClipboardViewModel:ObservableObject {
     func copyItem(with id :UUID){
         if let item = clipboardItems.first(where: { $0.id == id }) {
                 NSPasteboard.general.setString(item.content, forType: .string)
-                DispatchQueue.main.async {
-                    self.clipboardItems.insert(item, at: 0)
-                }
+                let newItem=ClipboardItem(
+                    content:item.content,
+                    date:Date(),
+                    type:"Text"
+                )
+            DispatchQueue.main.async {
+                self.clipboardItems.insert(newItem, at: 0)
             }
+            }
+        
         
     }
     
