@@ -11,7 +11,14 @@ import SwiftUI
 struct RecallApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ZStack {
+                
+                VisualEffectBlur(material: .underWindowBackground, blendingMode: .behindWindow)
+                    .overlay(Color.black.opacity(0.4))
+                    .ignoresSafeArea()
+
+                ContentView()
+            }
         }
     }
 }

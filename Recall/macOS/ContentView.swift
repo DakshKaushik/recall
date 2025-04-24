@@ -27,6 +27,8 @@ struct ContentView: View {
             )
             .frame(minWidth: 280)
             
+            .background(Color.black.opacity(0.4))
+            
         } detail: {
             DetailView(
                 selectedItem: selectedItemId != nil ? viewModel.clipboardItems.first(where: { $0.id == selectedItemId }) : nil,
@@ -34,6 +36,8 @@ struct ContentView: View {
                 selectedItemId:$selectedItemId
             )
         }
+        
+        .background(Color.black.opacity(0.4))
         .navigationSplitViewStyle(.balanced)
         
     }
