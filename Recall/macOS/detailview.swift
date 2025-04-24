@@ -95,8 +95,12 @@ struct DetailView: View {
                         }
                     }
                     .padding(20)
+                    .navigationTitle("Details")
+                    .backgroundColor(Color.black)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .navigationTitle("")
+                
             } else {
                 
                 VStack(spacing: 20) {
@@ -117,12 +121,10 @@ struct DetailView: View {
                         .padding(.horizontal, 40)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .navigationTitle("Item Details")
+                .navigationTitle("")
             }
         }
     }
-
-    // MARK: - Helpers
 
     func iconFor(type: String) -> String {
         switch type.lowercased() {
