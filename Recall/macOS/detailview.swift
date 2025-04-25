@@ -95,11 +95,11 @@ struct DetailView: View {
                         }
                     }
                     .padding(20)
-                    .navigationTitle("Details")
-                    .backgroundColor(Color.black)
+                    
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .navigationTitle("")
+                .navigationTitle("Details")
+
                 
             } else {
                 
@@ -122,9 +122,13 @@ struct DetailView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .navigationTitle("")
+                
             }
         }
+        
+        
     }
+        
 
     func iconFor(type: String) -> String {
         switch type.lowercased() {
