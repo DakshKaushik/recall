@@ -14,7 +14,14 @@ struct ContentView: View {
         if searchText.isEmpty {
             return viewModel.clipboardItems
         } else {
-            return viewModel.clipboardItems.filter { $0.content.localizedCaseInsensitiveContains(searchText) }
+            return viewModel.clipboardItems.filter { item in
+                if item.type == "Image" {
+                    return "Image".localizedCaseInsensitiveContains(searchText) || item.customName?.localizedCaseInsensitiveContains(searchText) ?? false
+                }
+                else{
+                    return item.content?.localizedCaseInsensitiveContains(searchText) ?? false || item.customName?.localizedCaseInsensitiveContains(searchText) ?? false
+                }
+            }
         }
     }
     
@@ -23,7 +30,8 @@ struct ContentView: View {
             SidebarView(
                 items: filteredItems,
                 selectedItemId: $selectedItemId,
-                searchText: $searchText
+                searchText: $searchText,
+                viewModel: viewModel
             )
             .frame(minWidth: 280)
             
@@ -32,8 +40,8 @@ struct ContentView: View {
         } detail: {
             DetailView(
                 selectedItem: selectedItemId != nil ? viewModel.clipboardItems.first(where: { $0.id == selectedItemId }) : nil,
-               viewModel: viewModel,
-                selectedItemId:$selectedItemId
+                viewModel: viewModel,
+                selectedItemId: $selectedItemId
             )
         }
         
@@ -41,14 +49,4 @@ struct ContentView: View {
         .navigationSplitViewStyle(.balanced)
         
     }
-}
-
-#Preview {
-    let mockViewModel = ClipboardViewModel()
-    // Add some sample items
-    mockViewModel.clipboardItems = [
-        ClipboardItem(content: "Sample clipboard text that might be long enough to show line wrapping", date: Date(), type: "Text"),
-    ]
-    
-    return ContentView(viewModel: mockViewModel)
 }

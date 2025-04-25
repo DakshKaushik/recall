@@ -44,13 +44,35 @@ class ClipboardViewModel: ObservableObject {
         if pasteboard.changeCount != lastChangeCount {
             lastChangeCount = pasteboard.changeCount
             
-            // Try to get text from clipboard
-            if let string = pasteboard.string(forType: .string)?.trimmingCharacters(in: .whitespacesAndNewlines), !string.isEmpty {
-                // Create a new clipboard item
+            // Try to get image from clipboard first
+            if let image = pasteboard.readObjects(forClasses: [NSImage.self], options: nil)?.first as? NSImage,
+               let tiffData = image.tiffRepresentation {
+                // Create a new clipboard item for image
+                let newItem = ClipboardItem(
+                    content: "Image",
+                    date: Date(),
+                    type: "Image",
+                    data: tiffData,
+                    isPinned: false,
+                    customName: nil
+                )
+                
+                // Add to our list
+                DispatchQueue.main.async {
+                    self.clipboardItems.insert(newItem, at: 0)
+                    self.saveClipboardItems()
+                }
+            }
+            // If no image, try to get text
+            else if let string = pasteboard.string(forType: .string)?.trimmingCharacters(in: .whitespacesAndNewlines), !string.isEmpty {
+                // Create a new clipboard item for text
                 let newItem = ClipboardItem(
                     content: string,
                     date: Date(),
-                    type: "Text"
+                    type: "Text",
+                    data: nil,
+                    isPinned: false,
+                    customName: nil
                 )
                 
                 // Add to our list
@@ -69,16 +91,41 @@ class ClipboardViewModel: ObservableObject {
     
     func copyItem(with id: UUID) {
         if let item = clipboardItems.first(where: { $0.id == id }) {
-            NSPasteboard.general.setString(item.content, forType: .string)
+            if item.type == "Image", let imageData = item.data {
+                // Handle image copy
+                if let image = NSImage(data: imageData) {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.writeObjects([image])
+                }
+            } else {
+                // Handle text copy
+                NSPasteboard.general.setString(item.content ?? "", forType: .string)
+            }
+            
             let newItem = ClipboardItem(
                 content: item.content,
                 date: Date(),
-                type: "Text"
+                type: item.type,
+                data: item.data
             )
             DispatchQueue.main.async {
                 self.clipboardItems.insert(newItem, at: 0)
                 self.saveClipboardItems()
             }
+        }
+    }
+    
+    func pinItem(with id: UUID) {
+        if let index = clipboardItems.firstIndex(where: { $0.id == id }) {
+            clipboardItems[index].isPinned.toggle()
+            saveClipboardItems()
+        }
+    }
+    
+    func renameItem(with id: UUID, newName: String) {
+        if let index = clipboardItems.firstIndex(where: { $0.id == id }) {
+            clipboardItems[index].customName = newName.isEmpty ? nil : newName
+            saveClipboardItems()
         }
     }
     

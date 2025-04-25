@@ -6,103 +6,168 @@ struct DetailView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var viewModel: ClipboardViewModel
     @Binding var selectedItemId: UUID?
+    @State private var isEditingName = false
+    @State private var editingName = ""
 
     var body: some View {
         ZStack {
-            
             VisualEffectBlur(material: .underWindowBackground, blendingMode: .behindWindow)
                 .overlay(Color.black.opacity(0.4))
                 .ignoresSafeArea()
 
-         
             if let item = selectedItem {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {
-                      
-                        HStack {
-                            Image(systemName: iconFor(type: item.type))
-                                .font(.system(size: 16))
-                                .foregroundColor(.white)
-                                .frame(width: 36, height: 36)
-                                .background(colorFor(type: item.type))
-                                .cornerRadius(10)
+                        // Header
+                        HStack(spacing: 16) {
+                            if item.type == "Image", let imageData = item.data, let image = NSImage(data: imageData) {
+                                Image(nsImage: image)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 48, height: 48)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                            } else {
+                                Image(systemName: iconFor(type: item.type))
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.white)
+                                    .frame(width: 48, height: 48)
+                                    .background(colorFor(type: item.type))
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                            }
 
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(item.type)
-                                    .font(.headline)
+                                if isEditingName {
+                                    TextField("Enter name", text: $editingName, onCommit: {
+                                        viewModel.renameItem(with: item.id, newName: editingName)
+                                        isEditingName = false
+                                    })
+                                    .textFieldStyle(PlainTextFieldStyle())
+                                    .font(.title3.weight(.medium))
+                                } else {
+                                    Text(item.displayName)
+                                        .font(.title3.weight(.medium))
+                                }
 
-                                Text(item.date, style: .date)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
+                                HStack(spacing: 8) {
+                                    Text(item.type)
+                                        .font(.system(size: 12, weight: .medium))
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(colorFor(type: item.type).opacity(0.1))
+                                        .cornerRadius(6)
+
+                                    Text(item.date, style: .date)
+                                        .font(.system(size: 12))
+                                        .foregroundColor(.secondary)
+                                }
                             }
+
                             Spacer()
+
                             HStack(spacing: 12) {
-                                Button(action: {
-                                    viewModel.copyItem(with: item.id)
-                                }) {
-                                    Label("Copy", systemImage: "doc.on.doc")
-                                }
-                                .buttonStyle(.borderedProminent)
+                                if isEditingName {
+                                    Button(action: {
+                                        viewModel.renameItem(with: item.id, newName: editingName)
+                                        isEditingName = false
+                                    }) {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundColor(.green)
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                    .tint(.green.opacity(0.2))
 
-                                Button(action: {
-                                    viewModel.removeItem(with: item.id)
-                                    selectedItemId = nil
-                                }) {
-                                    Label("Delete", systemImage: "trash")
+                                    Button(action: {
+                                        isEditingName = false
+                                    }) {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .foregroundColor(.red)
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                    .tint(.red.opacity(0.2))
+                                } else {
+                                    Button(action: {
+                                        editingName = item.customName ?? ""
+                                        isEditingName = true
+                                    }) {
+                                        Label("Rename", systemImage: "pencil")
+                                    }
+                                    .buttonStyle(.borderedProminent)
+
+                                    Button(action: {
+                                        viewModel.copyItem(with: item.id)
+                                    }) {
+                                        Label("Copy", systemImage: "doc.on.doc")
+                                    }
+                                    .buttonStyle(.borderedProminent)
+
+                                    Button(action: {
+                                        viewModel.removeItem(with: item.id)
+                                        selectedItemId = nil
+                                    }) {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                    .tint(.red)
                                 }
-                                .buttonStyle(.borderedProminent)
-                                .tint(.red)
                             }
                         }
-                        .padding(16)
+                        .padding(20)
+                        .background(Color.black.opacity(0.2))
+                        .cornerRadius(12)
 
-                       
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack {
-                                Text("Content")
-                                    .font(.headline)
-                                Spacer()
-                                Text("\(item.characterCount) characters")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-
-                            ScrollView(.horizontal) {
-                                Text(item.content)
-                                    .font(.system(.body, design: .monospaced))
-                                    .foregroundColor(.white)
-                                    .padding()
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .background(Color.black.opacity(0.7))
-                                    .cornerRadius(12)
-                                    .textSelection(.enabled)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                        }
-
-                        
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Stats")
+                        // Content
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Content")
                                 .font(.headline)
+                                .foregroundColor(.secondary)
 
-                            HStack {
-                                StatBadge(title: "Characters", value: "\(item.characterCount)", icon: "character.textbox")
-                                StatBadge(title: "Words", value: "\(item.wordCount)", icon: "text.word.spacing")
-                                StatBadge(title: "Lines", value: "\(item.content.components(separatedBy: .newlines).count)", icon: "list.bullet")
+                            if item.type == "Image", let imageData = item.data, let image = NSImage(data: imageData) {
+                                Image(nsImage: image)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(maxWidth: .infinity)
+                                    .background(Color.black.opacity(0.2))
+                                    .cornerRadius(12)
+                            } else {
+                                ScrollView([.horizontal, .vertical]) {
+                                    Text(item.content ?? "")
+                                        .font(.system(.body, design: .monospaced))
+                                        .foregroundColor(.white)
+                                        .padding()
+                                        .frame(maxWidth: .infinity, minHeight: 100, alignment: .leading)
+                                        .background(Color.black.opacity(0.2))
+                                        .cornerRadius(12)
+                                        .textSelection(.enabled)
+                                }
                             }
-                            .frame(maxWidth: .infinity)
+                        }
+                        .padding(20)
+                        .background(Color.black.opacity(0.2))
+                        .cornerRadius(12)
+
+                        if item.type == "Text" {
+                            // Stats
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("Stats")
+                                    .font(.headline)
+                                    .foregroundColor(.secondary)
+
+                                HStack(spacing: 16) {
+                                    StatBadge(title: "Characters", value: "\(item.characterCount)", icon: "character.textbox")
+                                    StatBadge(title: "Words", value: "\(item.wordCount)", icon: "text.word.spacing")
+                                    StatBadge(title: "Lines", value: "\(item.content?.components(separatedBy: .newlines).count ?? 0)", icon: "list.bullet")
+                                }
+                            }
+                            .padding(20)
+                            .background(Color.black.opacity(0.2))
+                            .cornerRadius(12)
                         }
                     }
-                    .padding(20)
-                    
+                    .padding(24)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .navigationTitle("Details")
-
-                
             } else {
-                
                 VStack(spacing: 20) {
                     Image(systemName: "clipboard")
                         .font(.system(size: 64))
@@ -122,13 +187,9 @@ struct DetailView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .navigationTitle("")
-                
             }
         }
-        
-        
     }
-        
 
     func iconFor(type: String) -> String {
         switch type.lowercased() {
