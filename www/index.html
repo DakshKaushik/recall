@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recall - Smart Clipboard Manager for macOS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <div class="logo">
+                <i class="fas fa-clipboard"></i>
+                <span>Recall</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#download">Download</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <header>
+        <div class="hero">
+            <h1>Your Smart Clipboard Manager</h1>
+            <p>Never lose your copied content again. Recall keeps track of your clipboard history with style.</p>
+            <a href="#download" class="cta-button">Download Now</a>
+        </div>
+    </header>
+
+    <section id="features">
+        <h2>Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-history"></i>
+                <h3>Clipboard History</h3>
+                <p>Access your entire clipboard history with a beautiful, organized interface.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-image"></i>
+                <h3>Image Support</h3>
+                <p>Copy and paste images with ease. View thumbnails and full-size previews.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-thumbtack"></i>
+                <h3>Pin Important Items</h3>
+                <p>Keep your frequently used items at the top with the pin feature.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-search"></i>
+                <h3>Smart Search</h3>
+                <p>Quickly find any copied content with our powerful search functionality.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="download">
+        <div class="download-content">
+            <h2>Download Recall</h2>
+            <p>Available for macOS 11.0 and later</p>
+            <a href="#" class="download-button">
+                <i class="fab fa-apple"></i>
+                Download for Mac
+            </a>
+            <p class="version">Version 1.0.0</p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Recall</h4>
+                <p>A modern clipboard manager for macOS</p>
+            </div>
+            <div class="footer-section">
+                <h4>Links</h4>
+                <a href="#features">Features</a>
+                <a href="#download">Download</a>
+            </div>
+            <div class="footer-section">
+                <h4>Connect</h4>
+                <div class="social-links">
+                    <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Recall. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const icon = themeToggle.querySelector('i');
+            
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                icon.classList.replace('fa-moon', 'fa-sun');
+            }
+            
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    icon.classList.replace('fa-moon', 'fa-sun');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    icon.classList.replace('fa-sun', 'fa-moon');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

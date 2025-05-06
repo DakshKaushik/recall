@@ -5,6 +5,7 @@ struct ContentView: View {
     @StateObject private var viewModel = ClipboardViewModel()
     @State private var selectedItemId: UUID?
     @State private var searchText = ""
+    @Environment(\.colorScheme) private var colorScheme
     
     init(viewModel: ClipboardViewModel = ClipboardViewModel()) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -34,19 +35,21 @@ struct ContentView: View {
                 viewModel: viewModel
             )
             .frame(minWidth: 280)
-            
-            .background(Color.black.opacity(0.4))
-            
+            .background(
+                VisualEffectBlur(material: .sidebar, blendingMode: .behindWindow)
+                    .opacity(0.8)
+            )
         } detail: {
             DetailView(
                 selectedItem: selectedItemId != nil ? viewModel.clipboardItems.first(where: { $0.id == selectedItemId }) : nil,
                 viewModel: viewModel,
                 selectedItemId: $selectedItemId
             )
+            .background(
+                VisualEffectBlur(material: .contentBackground, blendingMode: .behindWindow)
+                    .opacity(0.8)
+            )
         }
-        
-        .background(Color.black.opacity(0.4))
         .navigationSplitViewStyle(.balanced)
-        
     }
 }

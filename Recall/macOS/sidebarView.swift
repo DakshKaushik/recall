@@ -24,70 +24,64 @@ struct SidebarView: View {
     }
 
     var body: some View {
-        ZStack {
-            VisualEffectBlur(material: .underWindowBackground, blendingMode: .behindWindow)
-                .overlay(Color.black.opacity(0.4))
-                .ignoresSafeArea()
-
-            VStack(spacing: 0) {
-                // Search bar
-                HStack(spacing: 8) {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.secondary)
-                        .font(.system(size: 14, weight: .medium))
-                    
-                    TextField("Search clipboard items...", text: $searchText)
-                        .textFieldStyle(PlainTextFieldStyle())
-                        .font(.system(size: 14))
-                    
-                    if !searchText.isEmpty {
-                        Button(action: { searchText = "" }) {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundColor(.secondary)
-                                .font(.system(size: 14))
-                        }
-                        .buttonStyle(PlainButtonStyle())
+        VStack(spacing: 0) {
+            // Search bar
+            HStack(spacing: 8) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundColor(.secondary)
+                    .font(.system(size: 14, weight: .medium))
+                
+                TextField("Search clipboard items...", text: $searchText)
+                    .textFieldStyle(.plain)
+                    .font(.system(size: 14))
+                
+                if !searchText.isEmpty {
+                    Button(action: { searchText = "" }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(.secondary)
+                            .font(.system(size: 14))
                     }
+                    .buttonStyle(.plain)
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(Color.black.opacity(0.2))
-                .cornerRadius(8)
-                .padding(.horizontal, 16)
-                .padding(.top, 16)
-                .padding(.bottom, 8)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color.secondary.opacity(0.1))
+            .cornerRadius(8)
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 8)
 
-                // List of items
-                ScrollView {
-                    LazyVStack(spacing: 4) {
-                        ForEach(sortedItems) { item in
-                            ClipboardItemRow(
-                                item: item,
-                                isSelected: selectedItemId == item.id,
-                                isHovered: hoveredItemId == item.id,
-                                isEditing: editingItemId == item.id,
-                                editingName: $editingName,
-                                onSelect: { selectedItemId = item.id },
-                                onPin: { viewModel.pinItem(with: item.id) },
-                                onRename: { newName in
-                                    viewModel.renameItem(with: item.id, newName: newName)
-                                    editingItemId = nil
-                                },
-                                onStartEditing: {
-                                    editingItemId = item.id
-                                    editingName = item.customName ?? ""
-                                },
-                                onCancelEditing: {
-                                    editingItemId = nil
-                                }
-                            )
-                            .onHover { isHovered in
-                                hoveredItemId = isHovered ? item.id : nil
+            // List of items
+            ScrollView {
+                LazyVStack(spacing: 4) {
+                    ForEach(sortedItems) { item in
+                        ClipboardItemRow(
+                            item: item,
+                            isSelected: selectedItemId == item.id,
+                            isHovered: hoveredItemId == item.id,
+                            isEditing: editingItemId == item.id,
+                            editingName: $editingName,
+                            onSelect: { selectedItemId = item.id },
+                            onPin: { viewModel.pinItem(with: item.id) },
+                            onRename: { newName in
+                                viewModel.renameItem(with: item.id, newName: newName)
+                                editingItemId = nil
+                            },
+                            onStartEditing: {
+                                editingItemId = item.id
+                                editingName = item.customName ?? ""
+                            },
+                            onCancelEditing: {
+                                editingItemId = nil
                             }
+                        )
+                        .onHover { isHovered in
+                            hoveredItemId = isHovered ? item.id : nil
                         }
                     }
-                    .padding(.horizontal, 16)
                 }
+                .padding(.horizontal, 16)
             }
         }
     }
@@ -104,6 +98,7 @@ struct ClipboardItemRow: View {
     let onRename: (String) -> Void
     let onStartEditing: () -> Void
     let onCancelEditing: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         HStack(spacing: 12) {
@@ -114,6 +109,7 @@ struct ClipboardItemRow: View {
                     .scaledToFill()
                     .frame(width: 32, height: 32)
                     .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
             } else {
                 Image(systemName: iconFor(type: item.type))
                     .font(.system(size: 14, weight: .medium))
@@ -121,6 +117,7 @@ struct ClipboardItemRow: View {
                     .frame(width: 32, height: 32)
                     .background(colorFor(type: item.type))
                     .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
             }
             
             // Content
@@ -129,7 +126,7 @@ struct ClipboardItemRow: View {
                     TextField("Enter name", text: $editingName, onCommit: {
                         onRename(editingName)
                     })
-                    .textFieldStyle(PlainTextFieldStyle())
+                    .textFieldStyle(.plain)
                     .font(.system(size: 14, weight: .medium))
                 } else {
                     Text(item.displayName)
@@ -162,28 +159,28 @@ struct ClipboardItemRow: View {
                                 .foregroundColor(.green)
                                 .font(.system(size: 14))
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        .buttonStyle(.plain)
                         
                         Button(action: onCancelEditing) {
                             Image(systemName: "xmark.circle.fill")
                                 .foregroundColor(.red)
                                 .font(.system(size: 14))
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        .buttonStyle(.plain)
                     } else {
                         Button(action: onStartEditing) {
                             Image(systemName: "pencil")
                                 .foregroundColor(.secondary)
                                 .font(.system(size: 14))
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        .buttonStyle(.plain)
                         
                         Button(action: onPin) {
                             Image(systemName: item.isPinned ? "pin.fill" : "pin")
                                 .foregroundColor(item.isPinned ? .blue : .secondary)
                                 .font(.system(size: 14))
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        .buttonStyle(.plain)
                     }
                 }
                 .transition(.opacity)
@@ -194,7 +191,7 @@ struct ClipboardItemRow: View {
         .background(
             RoundedRectangle(cornerRadius: 8)
                 .fill(isSelected ? Color.accentColor.opacity(0.2) : 
-                      isHovered ? Color.black.opacity(0.1) : Color.clear)
+                      isHovered ? Color.secondary.opacity(0.1) : Color.clear)
         )
         .contentShape(Rectangle())
         .onTapGesture {
