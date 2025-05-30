@@ -35,16 +35,6 @@
 			path = Recall;
 			sourceTree = "<group>";
 		};
-		524B14952DA673EB00BDE901 /* RecallTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = RecallTests;
-			sourceTree = "<group>";
-		};
-		524B149F2DA673EB00BDE901 /* RecallUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = RecallUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,8 +66,6 @@
 			isa = PBXGroup;
 			children = (
 				524B14832DA673E800BDE901 /* Recall */,
-				524B14952DA673EB00BDE901 /* RecallTests */,
-				524B149F2DA673EB00BDE901 /* RecallUITests */,
 				524B14822DA673E800BDE901 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -130,9 +118,6 @@
 			dependencies = (
 				524B14942DA673EB00BDE901 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				524B14952DA673EB00BDE901 /* RecallTests */,
-			);
 			name = RecallTests;
 			packageProductDependencies = (
 			);
@@ -152,9 +137,6 @@
 			);
 			dependencies = (
 				524B149E2DA673EB00BDE901 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				524B149F2DA673EB00BDE901 /* RecallUITests */,
 			);
 			name = RecallUITests;
 			packageProductDependencies = (
